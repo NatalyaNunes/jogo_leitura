@@ -20,6 +20,7 @@
   --toys:#C3B3F5; --toys-edge:#8E79D8;
   --grass:#93D67F; --grass-edge:#5FAE4C;
   --picnic:#FFF3EE; --picnic-line:rgba(230,62,92,.28); --picnic-edge:#E7A9A0;
+  --ice:#CFEFFC; --ice-edge:#8CCBEA;
   --shadow:rgba(36,48,74,.18);
   --display:"Fredoka","Baloo 2","Comic Sans MS",system-ui,sans-serif;
   --read:"Andika","Comic Sans MS","Trebuchet MS",system-ui,sans-serif;
@@ -30,6 +31,7 @@
     --lock:#34466F; --lock-ink:#8193B8;
     --toys:#4E3F86; --toys-edge:#362B63; --grass:#36703C; --grass-edge:#24502A;
     --picnic:#3A2F44; --picnic-line:rgba(230,62,92,.35); --picnic-edge:#2A2133;
+    --ice:#1E4C6B; --ice-edge:#13344B;
     --shadow:rgba(0,0,0,.35);
   }
 }
@@ -38,6 +40,7 @@
   --lock:#34466F; --lock-ink:#8193B8;
   --toys:#4E3F86; --toys-edge:#362B63; --grass:#36703C; --grass-edge:#24502A;
   --picnic:#3A2F44; --picnic-line:rgba(230,62,92,.35); --picnic-edge:#2A2133;
+    --ice:#1E4C6B; --ice-edge:#13344B;
   --shadow:rgba(0,0,0,.35);
 }
 
@@ -112,6 +115,11 @@ button:focus-visible{outline:4px solid var(--blue);outline-offset:4px;border-rad
   linear-gradient(90deg,var(--picnic-line) 50%,transparent 50%) 0 0/44px 44px,
   linear-gradient(var(--picnic-line) 50%,transparent 50%) 0 0/44px 44px,
   var(--picnic);border-bottom:10px solid var(--picnic-edge)}
+.w-ice{background:
+  radial-gradient(circle,rgba(255,255,255,.95) 0 3px,transparent 4px) 0 0/38px 38px,
+  radial-gradient(circle,rgba(255,255,255,.7) 0 2px,transparent 3px) 19px 25px/38px 38px,
+  linear-gradient(180deg,rgba(255,255,255,.55),transparent 120px),
+  var(--ice);border-bottom:10px solid var(--ice-edge)}
 .sign{position:absolute;top:16px;left:50%;transform:translateX(-50%) rotate(-2deg);z-index:3;
   display:flex;align-items:center;gap:10px;background:var(--wood);padding:8px 22px 8px 16px;border-radius:16px;
   box-shadow:0 6px 0 var(--wood-edge);white-space:nowrap}
@@ -295,6 +303,20 @@ const WORLDS = [
       ["A-BA-CA-XI 🍍","PI-RU-LI-TO 🍭","BIS-COI-TO 🍪"],
       ["ME-LAN-CI-A 🍉","CHO-CO-LA-TE 🍫","SAN-DU-Í-CHE 🥪"],
     ]},
+  { name:"Era do Gelo", icon:"🦣", cls:"w-ice",
+    deco:["❄️","🧊","🐧","☃️","🌰","🐿️","🦥","🏔️","🛷","🐻‍❄️","🌨️","🦭"],
+    levels:[
+      ["GE-LO 🧊","NE-VE 🌨️","FO-GO 🔥"],
+      ["NOZ 🌰","LU-VA 🧤","PE-DRA 🪨"],
+      ["FRI-O 🥶","LO-BO 🐺","NU-VEM ☁️"],
+      ["DO-DÔ 🦤","TRE-NÓ 🛷","FLO-CO ❄️"],
+      ["MA-MU-TE 🦣","BE-BÊ 👶","ME-LÃO 🍈"],
+      ["PIN-GUIM 🐧","RA-PO-SA 🦊","BO-NE-CO ☃️"],
+      ["ES-QUI-LO 🐿️","PRE-GUI-ÇA 🦥","VUL-CÃO 🌋"],
+      ["ÁR-VO-RE 🌲","CA-CHE-COL 🧣","MON-TA-NHA 🏔️"],
+      ["FA-MÍ-LI-A 👨‍👩‍👧","Á-GUI-A 🦅","CA-RAN-GUE-JO 🦀"],
+      ["DI-NOS-SAU-RO 🦖","RI-NO-CE-RON-TE 🦏","BRON-TOS-SAU-RO 🦕"],
+    ]},
 ];
 const parse = str => { const [syl, e] = str.split(" "); return { s: syl.split("-"), w: syl.replace(/-/g,""), e }; };
 const LEVELS = WORLDS.flatMap((wd,wi)=>wd.levels.map(ws=>({ world:wi, words:ws.map(parse) })));
@@ -313,9 +335,11 @@ const POINTS_WORD = 5, POINTS_STAR = 10;
 const KEY = "ler-brincando-v2";
 let save = { stars:{}, points:0 };
 try { const r = localStorage.getItem(KEY); if (r) save = Object.assign(save, JSON.parse(r)); } catch(e){}
-function persist(){ try { localStorage.setItem(KEY, JSON.stringify(save)); } catch(e){} }
+/* MODO DE TESTE: abra o site com ?teste no final do link para liberar tudo (nada é salvo) */
+const TEST = new URLSearchParams(location.search).has("teste");
+function persist(){ if (TEST) return; try { localStorage.setItem(KEY, JSON.stringify(save)); } catch(e){} }
 const isDone = i => (save.stars[i]||0) > 0;
-const unlocked = i => i === 0 || isDone(i-1);
+const unlocked = i => TEST || i === 0 || isDone(i-1);
 
 /* =========================================================
    VOZ
