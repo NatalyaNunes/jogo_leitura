@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ler Brincando</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧸</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   CORES E FONTES
+   ========================================================= */
+:root{
+  --sky:#AEE2FA; --sky2:#E6F7FF; --ink:#24304A; --soft:#56657F; --card:#FFFFFF;
+  --wood:#F6D7A4; --wood-edge:#C8924A; --wood-ink:#5A3A12;
+  --lock:#D5DCE6; --lock-ink:#8A97AB;
+  --red:#E63E5C; --yellow:#FFC531; --green:#1FA67A; --blue:#2D7FD3; --purple:#8A5CD1; --orange:#E07A00;
+  --toys:#C3B3F5; --toys-edge:#8E79D8;
+  --grass:#93D67F; --grass-edge:#5FAE4C;
+  --picnic:#FFF3EE; --picnic-line:rgba(230,62,92,.28); --picnic-edge:#E7A9A0;
+  --shadow:rgba(36,48,74,.18);
+  --display:"Fredoka","Baloo 2","Comic Sans MS",system-ui,sans-serif;
+  --read:"Andika","Comic Sans MS","Trebuchet MS",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --sky:#14234A; --sky2:#203462; --ink:#F2F5FB; --soft:#B7C3DA; --card:#2A3D69;
+    --lock:#34466F; --lock-ink:#8193B8;
+    --toys:#4E3F86; --toys-edge:#362B63; --grass:#36703C; --grass-edge:#24502A;
+    --picnic:#3A2F44; --picnic-line:rgba(230,62,92,.35); --picnic-edge:#2A2133;
+    --shadow:rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --sky:#14234A; --sky2:#203462; --ink:#F2F5FB; --soft:#B7C3DA; --card:#2A3D69;
+  --lock:#34466F; --lock-ink:#8193B8;
+  --toys:#4E3F86; --toys-edge:#362B63; --grass:#36703C; --grass-edge:#24502A;
+  --picnic:#3A2F44; --picnic-line:rgba(230,62,92,.35); --picnic-edge:#2A2133;
+  --shadow:rgba(0,0,0,.35);
+}
+
+/* =========================================================
+   BASE
+   ========================================================= */
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0;min-height:100%}
+body{
+  background:linear-gradient(180deg,var(--sky) 0%,var(--sky2) 60%);background-attachment:fixed;
+  color:var(--ink);font-family:var(--display);-webkit-tap-highlight-color:transparent;
+  user-select:none;-webkit-user-select:none;overflow-x:hidden;
+}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
+button:focus-visible{outline:4px solid var(--blue);outline-offset:4px;border-radius:18px}
+.wrap{max-width:640px;margin:0 auto;padding:8px 14px 48px}
+.hidden{display:none!important}
+
+/* barra do topo */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:20;padding:10px 0}
+.score{display:flex;align-items:center;gap:8px;background:var(--card);padding:8px 18px 8px 10px;
+  border-radius:999px;font-weight:700;font-size:1.35rem;box-shadow:0 4px 0 var(--shadow)}
+.score .s{font-size:1.6rem;line-height:1}
+.score.bump{animation:bump .5s}
+@keyframes bump{40%{transform:scale(1.25)}}
+.round{width:56px;height:56px;border-radius:50%;background:var(--card);font-size:1.7rem;
+  display:grid;place-items:center;box-shadow:0 4px 0 var(--shadow)}
+.round:active{transform:translateY(3px);box-shadow:0 1px 0 var(--shadow)}
+.lvl-label{font-size:1.3rem;font-weight:700;background:var(--card);padding:10px 18px;border-radius:999px;box-shadow:0 4px 0 var(--shadow)}
+
+/* =========================================================
+   BLOCO DE MADEIRA (usado no título e nas sílabas)
+   ========================================================= */
+.block{width:86px;height:86px;border-radius:20px;background:var(--wood);
+  box-shadow:0 7px 0 var(--wood-edge);display:grid;place-items:center;position:relative;
+  font-family:var(--read);font-weight:700;font-size:2.2rem;color:var(--c)}
+.block::before{content:"";position:absolute;inset:8px;border:4px solid var(--c);border-radius:12px;opacity:.85}
+.block.small{font-size:1.85rem}
+
+/* =========================================================
+   MAPA
+   ========================================================= */
+.hero{position:relative;text-align:center;padding:26px 0 18px}
+.cloud{position:absolute;background:#fff;border-radius:999px;opacity:.85;z-index:-1}
+.cloud::before,.cloud::after{content:"";position:absolute;background:#fff;border-radius:50%}
+.cloud.c1{width:110px;height:34px;top:6px;left:-10px}
+.cloud.c1::before{width:50px;height:50px;top:-24px;left:18px}
+.cloud.c1::after{width:38px;height:38px;top:-16px;left:56px}
+.cloud.c2{width:90px;height:28px;top:70px;right:-8px}
+.cloud.c2::before{width:42px;height:42px;top:-20px;left:14px}
+.cloud.c2::after{width:30px;height:30px;top:-12px;left:46px}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .cloud{opacity:.12} }
+.title{display:flex;flex-direction:column;align-items:center;gap:10px;margin:0}
+.title .line{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}
+.title .tb{--s:clamp(30px,9vw,54px);width:var(--s);height:var(--s);border-radius:10px;
+  font-size:calc(var(--s)*.58);box-shadow:0 5px 0 var(--wood-edge);transform:rotate(var(--r))}
+.title .tb::before{inset:4px;border-width:3px;border-radius:7px}
+.hero p{margin:16px 0 0;color:var(--soft);font-size:1.15rem;font-weight:500}
+
+.world{position:relative;margin:30px 0 10px;border-radius:40px;padding:72px 10px 34px;overflow:hidden}
+.w-toys{background:
+  radial-gradient(circle,rgba(255,255,255,.45) 0 6px,transparent 7px) 0 0/44px 44px,
+  radial-gradient(circle,rgba(255,255,255,.3) 0 4px,transparent 5px) 22px 22px/44px 44px,
+  var(--toys);border-bottom:10px solid var(--toys-edge)}
+.w-animals{background:
+  repeating-linear-gradient(100deg,rgba(255,255,255,.1) 0 26px,transparent 26px 52px),
+  var(--grass);border-bottom:10px solid var(--grass-edge)}
+.w-food{background:
+  linear-gradient(90deg,var(--picnic-line) 50%,transparent 50%) 0 0/44px 44px,
+  linear-gradient(var(--picnic-line) 50%,transparent 50%) 0 0/44px 44px,
+  var(--picnic);border-bottom:10px solid var(--picnic-edge)}
+.sign{position:absolute;top:16px;left:50%;transform:translateX(-50%) rotate(-2deg);z-index:3;
+  display:flex;align-items:center;gap:10px;background:var(--wood);padding:8px 22px 8px 16px;border-radius:16px;
+  box-shadow:0 6px 0 var(--wood-edge);white-space:nowrap}
+.sign span{font-size:1.9rem;line-height:1}
+.sign h2{margin:0;font-size:1.6rem;color:var(--wood-ink)}
+
+.trail{position:relative}
+.road{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}
+.road .base{fill:none;stroke:rgba(255,255,255,.55);stroke-width:26;stroke-linecap:round}
+.road .dash{fill:none;stroke:#fff;stroke-width:6;stroke-linecap:round;stroke-dasharray:2 18}
+.row{position:relative;height:122px;display:flex;align-items:center;justify-content:center;z-index:1}
+.deco{position:absolute;top:50%;font-size:clamp(2.1rem,8.5vw,3rem);line-height:1;
+  transform:translateY(-50%) rotate(var(--r));filter:drop-shadow(0 4px 0 rgba(0,0,0,.14))}
+.deco.l{left:3%} .deco.r{right:3%}
+.deco.bob{animation:bob 3s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-62%) rotate(var(--r))}}
+
+.node{--tx:calc(var(--f) * min(110px, 21vw));width:90px;height:90px;border-radius:50%;position:relative;
+  transform:translateX(var(--tx));background:var(--card);box-shadow:0 7px 0 var(--shadow),inset 0 0 0 5px rgba(255,255,255,.6);
+  display:grid;place-items:center;transition:transform .15s}
+.node .pic{font-size:2.7rem;line-height:1}
+.node .num{position:absolute;top:-6px;left:-6px;width:34px;height:34px;border-radius:50%;
+  background:var(--blue);color:#fff;font-weight:700;display:grid;place-items:center;font-size:1.1rem;border:3px solid var(--card)}
+.node .stars{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);white-space:nowrap;
+  background:var(--card);border-radius:999px;padding:1px 7px;font-size:.95rem;letter-spacing:-2px;box-shadow:0 3px 0 var(--shadow)}
+.node.locked{background:var(--lock);cursor:not-allowed}
+.node.locked .pic{filter:grayscale(1);opacity:.3}
+.node.locked .num{background:var(--lock-ink)}
+.node .padlock{position:absolute;font-size:1.7rem}
+.node.current{background:var(--yellow);animation:pulse 1.4s ease-in-out infinite}
+.node.current .num{background:var(--red)}
+@keyframes pulse{50%{transform:translateX(var(--tx)) scale(1.1)}}
+.node:not(.locked):active{transform:translateX(var(--tx)) translateY(5px);box-shadow:0 2px 0 var(--shadow)}
+.node.nudge{animation:nope .4s}
+@keyframes nope{25%{transform:translateX(calc(var(--tx) - 8px))}75%{transform:translateX(calc(var(--tx) + 8px))}}
+.world.locked .trail{filter:saturate(.3);opacity:.75}
+.lockmsg{position:relative;z-index:2;margin:6px auto 0;width:max-content;max-width:90%;text-align:center;
+  background:var(--card);padding:10px 18px;border-radius:18px;font-weight:600;color:var(--soft);box-shadow:0 4px 0 var(--shadow)}
+.reset{display:block;margin:40px auto 0;color:var(--soft);font-size:.95rem;text-decoration:underline;font-family:var(--read)}
+
+/* =========================================================
+   JOGO
+   ========================================================= */
+.stage{border-radius:40px;padding:22px 14px 30px;display:flex;flex-direction:column;align-items:center;gap:20px;margin-top:6px}
+.dots{display:flex;gap:10px;background:var(--card);padding:8px 14px;border-radius:999px;box-shadow:0 4px 0 var(--shadow)}
+.dot{width:40px;height:40px;border-radius:50%;background:var(--lock);display:grid;place-items:center;font-size:1.4rem;transition:transform .3s}
+.dot.now{background:var(--yellow);transform:scale(1.15)}
+.dot.ok{background:var(--green)}
+.round-area{display:flex;flex-direction:column;align-items:center;gap:22px;width:100%}
+.round-area.enter{animation:slideIn .45s cubic-bezier(.3,1.3,.5,1)}
+@keyframes slideIn{from{transform:translateX(60px);opacity:0}}
+.picture{width:min(210px,56vw);aspect-ratio:1;border-radius:40px;background:var(--card);
+  box-shadow:0 10px 0 var(--shadow);display:grid;place-items:center;position:relative}
+.picture .emo{font-size:min(124px,32vw);line-height:1}
+.picture .ear{position:absolute;right:-10px;bottom:-10px;width:62px;height:62px;border-radius:50%;
+  background:var(--blue);color:#fff;font-size:1.8rem;display:grid;place-items:center;box-shadow:0 5px 0 rgba(0,0,0,.2);
+  animation:wig 2.4s ease-in-out infinite}
+@keyframes wig{0%,80%,100%{transform:rotate(0)}85%{transform:rotate(-14deg)}92%{transform:rotate(14deg)}}
+.picture:active{transform:translateY(6px);box-shadow:0 4px 0 var(--shadow)}
+.picture.talk .emo{animation:talk .5s ease-in-out 2}
+@keyframes talk{50%{transform:scale(1.12) rotate(-4deg)}}
+.slots{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+  background:rgba(255,255,255,.55);padding:14px;border-radius:28px;min-height:116px;transition:background .3s,box-shadow .3s}
+.slots.ok{background:rgba(31,166,122,.35);box-shadow:0 0 0 6px var(--green)}
+.slot{width:86px;height:86px;border-radius:20px;border:4px dashed var(--soft);opacity:.7;display:grid;place-items:center}
+.slot.filled{opacity:1;border:0}
+.slot .block{animation:land .3s}
+@keyframes land{50%{transform:scale(1.15)}}
+.slots.ok .block{animation:cheer .6s ease-in-out}
+@keyframes cheer{50%{transform:translateY(-14px)}}
+.tray{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;max-width:560px}
+.tray .block{transition:transform .12s}
+.tray .block:active{transform:translateY(5px);box-shadow:0 2px 0 var(--wood-edge)}
+.tray .block.used{visibility:hidden}
+.block.shake{animation:shake .45s;background:#FFC9CF}
+@keyframes shake{20%{transform:translateX(-10px) rotate(-6deg)}40%{transform:translateX(10px) rotate(6deg)}60%{transform:translateX(-8px)}80%{transform:translateX(6px)}}
+.block.hint{animation:glow 1s ease-in-out infinite}
+@keyframes glow{50%{transform:translateY(-8px);box-shadow:0 7px 0 var(--wood-edge),0 0 0 8px rgba(255,197,49,.8)}}
+.flyer{position:fixed;z-index:50;margin:0;pointer-events:none;transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+.tip{font-family:var(--read);color:var(--soft);font-size:1.05rem;text-align:center;margin:14px 0 0}
+
+/* =========================================================
+   TELA DE VITÓRIA
+   ========================================================= */
+.over{position:fixed;inset:0;z-index:60;background:rgba(20,30,55,.55);display:grid;place-items:center;padding:20px}
+.win{background:var(--card);border-radius:40px;padding:28px 22px;width:min(420px,100%);text-align:center;
+  box-shadow:0 12px 0 var(--shadow);animation:pop .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
+.win h3{margin:0 0 10px;font-size:2rem}
+.win .words{display:flex;flex-direction:column;gap:6px;margin:0 auto 6px;width:max-content}
+.win .words div{display:flex;align-items:center;gap:12px;font-family:var(--read);font-weight:700;font-size:1.7rem;letter-spacing:2px}
+.win .words span{font-size:2.2rem}
+.win .bigstars{font-size:3rem;letter-spacing:4px;margin:8px 0}
+.win .bigstars span{display:inline-block;animation:starIn .5s backwards}
+.win .bigstars span.off{filter:grayscale(1);opacity:.3}
+@keyframes starIn{from{transform:scale(0) rotate(-180deg)}}
+.win .pts{font-size:1.5rem;font-weight:700;color:var(--green);margin-bottom:18px}
+.btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{padding:16px 26px;border-radius:22px;font-size:1.3rem;font-weight:700;color:#fff;background:var(--green);box-shadow:0 6px 0 #127454}
+.btn.alt{background:var(--blue);box-shadow:0 6px 0 #1C5A99}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.confetti{position:fixed;top:-20px;width:12px;height:18px;z-index:70;pointer-events:none;border-radius:3px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+@media (max-width:420px){
+  .block,.slot{width:70px;height:70px;font-size:1.8rem}
+  .block.small{font-size:1.45rem}
+  .tray{gap:10px}
+  .node{width:78px;height:78px}.node .pic{font-size:2.3rem}
+  .row{height:110px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <button class="round hidden" id="backBtn" aria-label="Voltar ao mapa">🏠</button>
+    <span class="lvl-label hidden" id="lvlLabel"></span>
+    <span id="spacer"></span>
+    <div class="score" id="score"><span class="s">⭐</span><span id="pts">0</span></div>
+  </div>
+
+  <main id="mapView">
+    <header class="hero">
+      <div class="cloud c1"></div><div class="cloud c2"></div>
+      <h1 class="title" id="title" aria-label="Ler Brincando"></h1>
+      <p>Toque na fase que está brilhando</p>
+    </header>
+    <div id="worlds"></div>
+    <button class="reset" id="resetBtn">Recomeçar do zero</button>
+  </main>
+
+  <main id="gameView" class="hidden"></main>
+</div>
+
+<script>
+/* =========================================================
+   FASES — cada fase tem 3 palavras: "SÍ-LA-BAS emoji"
+   ========================================================= */
+const WORLDS = [
+  { name:"Brinquedos", icon:"🧸", cls:"w-toys",
+    deco:["🪀","🎲","🚂","🪁","🤖","🎈","🧩","🪆","🚗","🥁","⛵","🎠","🛴","🎮","🧸","🪅","🚀","🎨"],
+    levels:[
+      ["BO-LA ⚽","PI-PA 🪁","DA-DO 🎲"],
+      ["MO-TO 🏍️","JO-GO 🎮","BO-LA ⚽"],
+      ["UR-SO 🧸","RO-BÔ 🤖","PI-PA 🪁"],
+      ["BA-LÃO 🎈","BAR-CO ⛵","DA-DO 🎲"],
+      ["CAR-RO 🚗","COR-DA 🪢","UR-SO 🧸"],
+      ["TAM-BOR 🥁","TRA-TOR 🚜","BO-LHA 🫧"],
+      ["BO-NE-CA 🪆","I-O-I-Ô 🪀","BA-LÃO 🎈"],
+      ["A-VI-ÃO ✈️","VI-O-LÃO 🎸","FO-GUE-TE 🚀"],
+      ["Ô-NI-BUS 🚌","TE-CLA-DO 🎹","CA-MI-NHÃO 🚚"],
+      ["PA-TI-NE-TE 🛴","BI-CI-CLE-TA 🚲","CAR-ROS-SEL 🎠"],
+    ]},
+  { name:"Animais", icon:"🐾", cls:"w-animals",
+    deco:["🌻","🐞","🌳","🦋","🌼","🐌","🍄","🐝","🌷","🐦","🌿","🐛"],
+    levels:[
+      ["GA-TO 🐱","PA-TO 🦆","VA-CA 🐄"],
+      ["SA-PO 🐸","RA-TO 🐭","LO-BO 🐺"],
+      ["GA-LO 🐓","FO-CA 🦭","BO-DE 🐐"],
+      ["LE-ÃO 🦁","PEI-XE 🐟","POR-CO 🐷"],
+      ["POL-VO 🐙","ZE-BRA 🦓","TI-GRE 🐯"],
+      ["CA-VA-LO 🐴","MA-CA-CO 🐵","GI-RA-FA 🦒"],
+      ["CA-ME-LO 🐫","CO-RU-JA 🦉","JA-CA-RÉ 🐊"],
+      ["CO-E-LHO 🐰","GA-LI-NHA 🐔","A-BE-LHA 🐝"],
+      ["BA-LEI-A 🐳","CA-CHOR-RO 🐶","TU-BA-RÃO 🦈"],
+      ["E-LE-FAN-TE 🐘","TAR-TA-RU-GA 🐢","BOR-BO-LE-TA 🦋"],
+    ]},
+  { name:"Comidas", icon:"🍎", cls:"w-food",
+    deco:["🧺","🍉","🥐","🧁","🍪","🍓","🥨","🍩","🍌","🧃","🍯","🍒"],
+    levels:[
+      ["U-VA 🍇","O-VO 🥚","BO-LO 🎂"],
+      ["PE-RA 🍐","CO-CO 🥥","SU-CO 🧃"],
+      ["SO-PA 🍲","MA-ÇÃ 🍎","LEI-TE 🥛"],
+      ["LI-MÃO 🍋","ME-LÃO 🍈","MI-LHO 🌽"],
+      ["BA-NA-NA 🍌","BA-TA-TA 🥔","TO-MA-TE 🍅"],
+      ["CE-RE-JA 🍒","PI-PO-CA 🍿","QUEI-JO 🧀"],
+      ["CE-NOU-RA 🥕","SOR-VE-TE 🍦","LA-RAN-JA 🍊"],
+      ["MO-RAN-GO 🍓","A-BA-CA-TE 🥑","PÊS-SE-GO 🍑"],
+      ["A-BA-CA-XI 🍍","PI-RU-LI-TO 🍭","BIS-COI-TO 🍪"],
+      ["ME-LAN-CI-A 🍉","CHO-CO-LA-TE 🍫","SAN-DU-Í-CHE 🥪"],
+    ]},
+];
+const parse = str => { const [syl, e] = str.split(" "); return { s: syl.split("-"), w: syl.replace(/-/g,""), e }; };
+const LEVELS = WORLDS.flatMap((wd,wi)=>wd.levels.map(ws=>({ world:wi, words:ws.map(parse) })));
+const PER_WORLD = 10;
+
+/* sílabas "intrusas" para confundir um pouquinho */
+const EXTRA = ["BA","BE","BI","BO","BU","CA","CO","DA","DE","FA","FO","GA","JA","LA","LE","LI","LU",
+  "MA","ME","MI","MO","NA","NE","PA","PE","PO","RA","RI","SA","SE","TA","TE","TI","VA","VE","ZA"];
+const COLORS = ["var(--red)","var(--blue)","var(--green)","var(--purple)","var(--orange)"];
+const ZIGZAG = [0,.65,1,.65,0,-.65,-1,-.65];
+const POINTS_WORD = 5, POINTS_STAR = 10;
+
+/* =========================================================
+   PROGRESSO (fica salvo no navegador)
+   ========================================================= */
+const KEY = "ler-brincando-v2";
+let save = { stars:{}, points:0 };
+try { const r = localStorage.getItem(KEY); if (r) save = Object.assign(save, JSON.parse(r)); } catch(e){}
+function persist(){ try { localStorage.setItem(KEY, JSON.stringify(save)); } catch(e){} }
+const isDone = i => (save.stars[i]||0) > 0;
+const unlocked = i => i === 0 || isDone(i-1);
+
+/* =========================================================
+   VOZ
+   ========================================================= */
+let voice = null;
+function pickVoice(){
+  if (!("speechSynthesis" in window)) return;
+  const vs = speechSynthesis.getVoices();
+  voice = vs.find(v=>/pt[-_]BR/i.test(v.lang) && /google|luciana|francisca|natural/i.test(v.name))
+       || vs.find(v=>/pt[-_]BR/i.test(v.lang)) || vs.find(v=>/^pt/i.test(v.lang)) || null;
+}
+if ("speechSynthesis" in window){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+function say(list, rate=0.8){
+  if (!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  [].concat(list).forEach(t=>{
+    const u = new SpeechSynthesisUtterance(t);
+    u.lang = "pt-BR"; if (voice) u.voice = voice; u.rate = rate; u.pitch = 1.1;
+    speechSynthesis.speak(u);
+  });
+}
+
+/* =========================================================
+   EFEITOS SONOROS
+   ========================================================= */
+let actx = null;
+function tone(freqs, dur=.12, type="sine", vol=.15){
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    let t = actx.currentTime;
+    freqs.forEach(f=>{
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = type; o.frequency.value = f; o.connect(g); g.connect(actx.destination);
+      g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.001,t+dur);
+      o.start(t); o.stop(t+dur); t += dur*.8;
+    });
+  }catch(e){}
+}
+const sfx = {
+  pop:()=>tone([660,880],.09,"triangle"),
+  bad:()=>tone([220,180],.16,"square",.06),
+  word:()=>tone([523,784],.14,"triangle",.16),
+  win:()=>tone([523,659,784,1047],.16,"triangle",.18),
+};
+
+/* =========================================================
+   UTILITÁRIOS
+   ========================================================= */
+const $ = id => document.getElementById(id);
+const shuffle = a => { for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];} return a; };
+const restart = (el, cls) => { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); };
+function bumpScore(){ $("pts").textContent = save.points; restart($("score"),"bump"); }
+
+/* título em blocos de madeira */
+$("title").innerHTML = ["LER","BRINCANDO"].map((word,li)=>
+  `<span class="line">${[...word].map((c,k)=>
+    `<span class="block tb" aria-hidden="true" style="--c:${COLORS[(k+li*2)%COLORS.length]};--r:${((k*7+li*3)%9)-4}deg">${c}</span>`
+  ).join("")}</span>`).join("");
+
+/* =========================================================
+   MAPA
+   ========================================================= */
+function renderMap(){
+  $("pts").textContent = save.points;
+  const current = LEVELS.findIndex((_,i)=>unlocked(i) && !isDone(i));
+  let html = "";
+  WORLDS.forEach((wd,wi)=>{
+    const first = wi*PER_WORLD, open = unlocked(first);
+    html += `<section class="world ${wd.cls} ${open?"":"locked"}">
+      <div class="sign"><span>${wd.icon}</span><h2>${wd.name}</h2></div>
+      ${open?"":`<div class="lockmsg">🔒 Termine ${WORLDS[wi-1].name} para abrir</div>`}
+      <div class="trail"><svg class="road"><path class="base"/><path class="dash"/></svg>`;
+    wd.levels.forEach((_,k)=>{
+      const i = first+k, st = save.stars[i]||0, op = unlocked(i), f = ZIGZAG[k%8];
+      const cls = !op ? "locked" : (i===current ? "current" : "");
+      const d1 = wd.deco[(k*2)%wd.deco.length], d2 = wd.deco[(k*2+1)%wd.deco.length];
+      const rot = n => ((n*37)%30)-15;
+      const deco = f>0 ? `<span class="deco l ${k%3===0?"bob":""}" style="--r:${rot(k)}deg">${d1}</span>`
+                 : f<0 ? `<span class="deco r ${k%3===1?"bob":""}" style="--r:${rot(k)}deg">${d1}</span>`
+                 : `<span class="deco l" style="--r:${rot(k)}deg">${d1}</span><span class="deco r bob" style="--r:${rot(k+5)}deg">${d2}</span>`;
+      html += `<div class="row">${deco}
+        <button class="node ${cls}" style="--f:${f}" data-i="${i}" aria-label="Fase ${i+1}${op?"":" bloqueada"}">
+          <span class="pic">${LEVELS[i].words[0].e}</span><span class="num">${i+1}</span>
+          ${!op?'<span class="padlock">🔒</span>':""}
+          ${st?`<span class="stars">${"⭐".repeat(st)}</span>`:""}
+        </button></div>`;
+    });
+    html += `</div></section>`;
+  });
+  $("worlds").innerHTML = html;
+  $("worlds").querySelectorAll(".node").forEach(b=>b.onclick=()=>{
+    const i = +b.dataset.i;
+    if (!unlocked(i)){ restart(b,"nudge"); sfx.bad(); return; }
+    startLevel(i);
+  });
+  drawRoads();
+}
+
+/* desenha a trilha curvinha ligando as fases */
+function drawRoads(){
+  document.querySelectorAll(".trail").forEach(tr=>{
+    const box = tr.getBoundingClientRect();
+    const pts = [...tr.querySelectorAll(".node")].map(n=>{
+      const r = n.getBoundingClientRect();
+      return [r.left - box.left + r.width/2, r.top - box.top + r.height/2];
+    });
+    if (!pts.length) return;
+    let d = `M${pts[0][0]},${pts[0][1]}`;
+    for (let k=1;k<pts.length;k++){
+      const [x0,y0] = pts[k-1], [x1,y1] = pts[k], ym = (y0+y1)/2;
+      d += ` C${x0},${ym} ${x1},${ym} ${x1},${y1}`;
+    }
+    tr.querySelectorAll(".road path").forEach(p=>p.setAttribute("d", d));
+  });
+}
+let rt; addEventListener("resize",()=>{ clearTimeout(rt); rt = setTimeout(drawRoads,120); });
+if (document.fonts) document.fonts.ready.then(drawRoads);
+
+function showMap(){
+  if ("speechSynthesis" in window) speechSynthesis.cancel();
+  $("gameView").classList.add("hidden"); $("mapView").classList.remove("hidden");
+  $("backBtn").classList.add("hidden"); $("lvlLabel").classList.add("hidden"); $("spacer").classList.remove("hidden");
+  renderMap();
+  const cur = document.querySelector(".node.current");
+  if (cur) setTimeout(()=>cur.scrollIntoView({behavior:"smooth",block:"center"}),80);
+}
+$("backBtn").onclick = showMap;
+$("resetBtn").onclick = ()=>{
+  if (confirm("Apagar todas as estrelas e pontos e começar da fase 1?")){
+    save = {stars:{},points:0}; persist(); renderMap(); scrollTo(0,0);
+  }
+};
+
+/* =========================================================
+   JOGO
+   ========================================================= */
+let G = null;
+
+function startLevel(i){
+  const L = LEVELS[i];
+  G = { i, L, w:0, placed:0, errors:0, wrongNow:0, busy:false };
+  $("mapView").classList.add("hidden"); $("gameView").classList.remove("hidden");
+  $("backBtn").classList.remove("hidden"); $("spacer").classList.add("hidden");
+  $("lvlLabel").textContent = `Fase ${i+1}`; $("lvlLabel").classList.remove("hidden");
+  scrollTo(0,0);
+  $("gameView").innerHTML = `
+    <div class="stage ${WORLDS[L.world].cls}">
+      <div class="dots" id="dots">${L.words.map(()=>`<span class="dot"></span>`).join("")}</div>
+      <div class="round-area" id="roundArea"></div>
+    </div>
+    <p class="tip">Toque na figura para ouvir. Depois toque nas sílabas na ordem certa.</p>`;
+  startWord();
+}
+
+function startWord(){
+  const W = G.L.words[G.w];
+  const nExtra = Math.min(2 + G.L.world, 4);
+  const extras = shuffle(EXTRA.filter(x=>!W.s.includes(x))).slice(0,nExtra);
+  const tiles = shuffle([...W.s, ...extras]);
+  G.placed = 0; G.wrongNow = 0; G.busy = false;
+
+  document.querySelectorAll(".dot").forEach((d,k)=>{
+    d.className = "dot" + (k<G.w ? " ok" : k===G.w ? " now" : "");
+    d.textContent = k<G.w ? G.L.words[k].e : "";
+  });
+
+  const area = $("roundArea");
+  area.innerHTML = `
+    <button class="picture" id="pic" aria-label="Ouvir a palavra">
+      <span class="emo">${W.e}</span><span class="ear">🔊</span>
+    </button>
+    <div class="slots" id="slots">${W.s.map(()=>`<div class="slot"></div>`).join("")}</div>
+    <div class="tray">${tiles.map((t,k)=>
+      `<button class="block ${t.length>2?"small":""}" data-s="${t}" style="--c:${COLORS[k%COLORS.length]}">${t}</button>`).join("")}</div>`;
+  restart(area,"enter");
+
+  $("pic").onclick = ()=>{ restart($("pic"),"talk"); say(W.w.toLowerCase()); };
+  area.querySelectorAll(".tray .block").forEach(b=>b.onclick=()=>tapTile(b));
+  setTimeout(()=>say([G.w===0?"Vamos montar a palavra":"Agora monte", W.w.toLowerCase()]), 400);
+}
+
+function tapTile(b){
+  if (G.busy || b.classList.contains("used")) return;
+  const W = G.L.words[G.w], want = W.s[G.placed], got = b.dataset.s;
+  say(got.toLowerCase(), .7);
+  if (got === want){
+    sfx.pop(); G.wrongNow = 0;
+    document.querySelectorAll(".hint").forEach(h=>h.classList.remove("hint"));
+    flyTo(b, document.querySelectorAll(".slot")[G.placed]); G.placed++;
+  } else {
+    G.errors++; G.wrongNow++; sfx.bad();
+    restart(b,"shake"); setTimeout(()=>b.classList.remove("shake"),500);
+    if (G.wrongNow >= 2){
+      const right = [...document.querySelectorAll(".tray .block:not(.used)")].find(x=>x.dataset.s===want);
+      if (right) right.classList.add("hint");
+    }
+  }
+}
+
+function flyTo(b, slot){
+  G.busy = true;
+  const a = b.getBoundingClientRect(), z = slot.getBoundingClientRect();
+  const f = b.cloneNode(true); f.classList.add("flyer"); f.classList.remove("hint");
+  Object.assign(f.style,{left:a.left+"px",top:a.top+"px",width:a.width+"px",height:a.height+"px"});
+  document.body.appendChild(f); b.classList.add("used");
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    f.style.transform = `translate(${z.left-a.left+(z.width-a.width)/2}px,${z.top-a.top+(z.height-a.height)/2}px)`;
+  }));
+  setTimeout(()=>{
+    f.remove(); slot.classList.add("filled");
+    const placed = b.cloneNode(true); placed.classList.remove("used","hint"); placed.disabled = true;
+    slot.appendChild(placed);
+    if (G.placed === G.L.words[G.w].s.length) setTimeout(wordDone, 350);
+    else G.busy = false;
+  }, 470);
+}
+
+function wordDone(){
+  const W = G.L.words[G.w];
+  sfx.word(); restart($("slots"),"ok"); restart($("pic"),"talk");
+  save.points += POINTS_WORD; persist(); bumpScore();
+  const dot = document.querySelectorAll(".dot")[G.w];
+  dot.className = "dot ok"; dot.textContent = W.e;
+  if (G.w + 1 < G.L.words.length){
+    say([...W.s.map(s=>s.toLowerCase()), W.w.toLowerCase()], .75);
+    setTimeout(()=>{ G.w++; startWord(); }, 2600);
+  } else {
+    setTimeout(finish, 500);
+  }
+}
+
+function finish(){
+  const stars = G.errors<=1 ? 3 : G.errors<=4 ? 2 : 1;
+  const bonus = stars*POINTS_STAR;
+  save.stars[G.i] = Math.max(save.stars[G.i]||0, stars);
+  save.points += bonus; persist(); bumpScore();
+  sfx.win(); confetti();
+  const W = G.L.words[G.w];
+  say([...W.s.map(s=>s.toLowerCase()), W.w.toLowerCase(), stars===3?"Perfeito! Você leu tudo!":"Muito bem!"], .75);
+
+  const hasNext = G.i+1 < LEVELS.length;
+  const newWorld = hasNext && LEVELS[G.i+1].world !== G.L.world;
+  const o = document.createElement("div"); o.className = "over";
+  o.innerHTML = `<div class="win" role="dialog" aria-label="Fase concluída">
+    <h3>${stars===3?"Perfeito!":"Muito bem!"}</h3>
+    <div class="words">${G.L.words.map(w=>`<div><span>${w.e}</span>${w.w}</div>`).join("")}</div>
+    <div class="bigstars">${[1,2,3].map(k=>`<span class="${k<=stars?"":"off"}" style="animation-delay:${k*.2}s">⭐</span>`).join("")}</div>
+    <div class="pts">+${bonus + POINTS_WORD*G.L.words.length} pontos</div>
+    ${newWorld?`<p class="tip" style="margin:0 0 16px">Você abriu o mundo ${WORLDS[LEVELS[G.i+1].world].icon} ${WORLDS[LEVELS[G.i+1].world].name}!</p>`:""}
+    <div class="btns">
+      ${hasNext?`<button class="btn" id="nextBtn">Próxima fase</button>`:""}
+      <button class="btn alt" id="mapBtn">Ver o mapa</button>
+    </div>
+    ${hasNext?"":`<p class="tip">Você terminou todas as fases! 🏆</p>`}
+  </div>`;
+  document.body.appendChild(o);
+  if (hasNext) $("nextBtn").onclick = ()=>{ o.remove(); startLevel(G.i+1); };
+  $("mapBtn").onclick = ()=>{ o.remove(); showMap(); };
+}
+
+function confetti(){
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const cs = ["#E63E5C","#FFC531","#1FA67A","#2D7FD3","#8A5CD1"];
+  for (let k=0;k<70;k++){
+    const c = document.createElement("div"); c.className = "confetti";
+    c.style.left = Math.random()*100+"vw"; c.style.background = cs[k%5];
+    c.style.animationDuration = (1.6+Math.random()*1.6)+"s"; c.style.animationDelay = Math.random()*.4+"s";
+    document.body.appendChild(c); setTimeout(()=>c.remove(),3800);
+  }
+}
+
+showMap();
+</script>
+</body>
+</html>
