@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Letrinhas Mágicas – aprender a ler brincando</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#dcefff; --bg-dot:#c4e3ff; --card:#ffffff; --soft:#eef6ff;
+  --ink:#1f2a5a; --muted:#56608f; --line:#cfdcf2;
+  --red:#ff6b5b; --yellow:#ffc83d; --green:#2fbf71; --blue:#3b82f6; --grape:#8b5cf6;
+  --ok:#22b36a; --bad:#ef4b5f;
+  --lift:0 6px 0 rgba(31,42,90,.16);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#141a3a; --bg-dot:#1c2450; --card:#222a55; --soft:#2b3466;
+    --ink:#f1f4ff; --muted:#aab4e6; --line:#38427a; --lift:0 6px 0 rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141a3a; --bg-dot:#1c2450; --card:#222a55; --soft:#2b3466;
+  --ink:#f1f4ff; --muted:#aab4e6; --line:#38427a; --lift:0 6px 0 rgba(0,0,0,.4);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;min-height:100%;color:var(--ink);
+  background-color:var(--bg);
+  background-image:radial-gradient(var(--bg-dot) 2px,transparent 2.5px);
+  background-size:26px 26px;
+  font-family:'Fredoka','Baloo 2','Nunito','Trebuchet MS',system-ui,sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+button{font-family:inherit;color:inherit}
+button:focus-visible{outline:4px solid var(--blue);outline-offset:3px}
+.wrap{max-width:820px;margin:0 auto;padding:14px 16px 40px}
+
+/* topo */
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.brand{display:flex;gap:4px;align-items:center;background:none;border:0;cursor:pointer;padding:4px}
+.bloco{
+  display:inline-grid;place-items:center;width:34px;height:36px;border-radius:9px;
+  color:#fff;font-weight:700;font-size:1.3rem;box-shadow:0 4px 0 rgba(0,0,0,.2);
+}
+.bloco:nth-child(1){background:var(--red);transform:rotate(-6deg)}
+.bloco:nth-child(2){background:var(--yellow);color:#5a3d00;transform:rotate(4deg)}
+.bloco:nth-child(3){background:var(--green);transform:rotate(-3deg)}
+.brand .nome{font-weight:700;font-size:1.25rem;margin-left:8px}
+.ctrl{display:flex;gap:8px;align-items:center}
+.pill{
+  background:var(--card);border:3px solid var(--line);border-radius:999px;
+  padding:6px 14px;font-weight:600;font-size:1.05rem;box-shadow:var(--lift);white-space:nowrap
+}
+.pill.btn{cursor:pointer;min-width:52px}
+
+/* início */
+.hero{display:flex;gap:16px;align-items:center;background:var(--card);border:3px solid var(--line);border-radius:28px;padding:18px 20px;box-shadow:var(--lift)}
+.mascote{font-size:4.6rem;line-height:1;background:none;border:0;cursor:pointer;animation:bob 2.6s ease-in-out infinite}
+.hero h1{margin:0 0 4px;font-size:clamp(1.5rem,4.5vw,2.2rem);line-height:1.15}
+.hero p{margin:0;font-size:1.15rem;color:var(--muted);line-height:1.4}
+.sub{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:1.4rem;margin:26px 4px 12px}
+.temas{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.tema{
+  background:var(--tc);color:#fff;border:0;border-radius:24px;padding:18px 10px 14px;cursor:pointer;
+  box-shadow:0 7px 0 rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:center;gap:6px;
+  transition:transform .12s
+}
+.tema:hover{transform:translateY(-3px)}
+.tema:active{transform:translateY(4px);box-shadow:0 3px 0 rgba(0,0,0,.2)}
+.tema .ic{font-size:3.2rem;line-height:1.1}
+.tema .nm{font-size:1.25rem;font-weight:700;text-shadow:0 2px 0 rgba(0,0,0,.15)}
+.tema .st{font-size:.95rem;background:rgba(255,255,255,.28);border-radius:999px;padding:2px 10px}
+.adultos{margin-top:28px;background:var(--card);border:3px solid var(--line);border-radius:22px;padding:14px 18px;font-size:1.05rem;line-height:1.5}
+.adultos summary{cursor:pointer;font-weight:600}
+.adultos p{color:var(--muted);margin:10px 0 0;max-width:65ch}
+.zerar{margin-top:12px;background:none;border:2px solid var(--line);border-radius:12px;padding:6px 12px;cursor:pointer;color:var(--muted)}
+
+/* mapa */
+.mapa-top{display:flex;align-items:center;gap:12px;background:var(--tc);color:#fff;border-radius:26px;padding:14px 16px;box-shadow:0 7px 0 rgba(0,0,0,.18)}
+.mapa-top .ic{font-size:3rem}
+.mapa-top h2{margin:0;font-size:1.5rem}
+.mapa-top p{margin:2px 0 0;opacity:.95}
+.voltar{width:48px;height:48px;flex:none;border-radius:16px;border:0;background:rgba(255,255,255,.3);color:#fff;font-size:1.5rem;font-weight:700;cursor:pointer}
+.jogo .voltar{background:var(--card);color:var(--ink);border:3px solid var(--line)}
+.trilha{display:flex;flex-direction:column;gap:10px;padding:22px 0 10px}
+.no{display:flex;align-items:center;gap:14px;margin-left:var(--off)}
+.no:not(:last-child)::after{content:none}
+.circ{
+  width:92px;height:92px;flex:none;border-radius:50%;background:var(--tc);border:5px solid var(--card);
+  box-shadow:0 7px 0 rgba(0,0,0,.2);font-size:2.5rem;cursor:pointer;transition:transform .12s
+}
+.circ:hover{transform:scale(1.06)}
+.circ:active{transform:translateY(4px)}
+.no.atual .circ{animation:pulse 1.6s ease-in-out infinite}
+.no.locked .circ{background:#a9b0cf;cursor:not-allowed;animation:none}
+.no .info{display:flex;flex-direction:column;line-height:1.2}
+.no .info small{color:var(--muted);font-size:.95rem}
+.no .info b{font-size:1.2rem}
+.no.locked .info{opacity:.55}
+.mini{font-size:1.1rem;margin-top:2px}
+.off{filter:grayscale(1);opacity:.3}
+@media (max-width:540px){.no{margin-left:calc(var(--off) * .45)}.circ{width:80px;height:80px;font-size:2.2rem}}
+
+/* jogo */
+.jogo-top{display:flex;align-items:center;gap:10px}
+.barra{flex:1;height:20px;background:var(--card);border:3px solid var(--line);border-radius:999px;overflow:hidden}
+.barra i{display:block;height:100%;background:var(--tc);border-radius:999px;transition:width .5s}
+.cartao{background:var(--card);border:3px solid var(--line);border-radius:30px;padding:20px 18px 24px;margin-top:16px;text-align:center;box-shadow:var(--lift)}
+.figura{font-size:clamp(5rem,22vw,8rem);line-height:1.1;animation:pop .45s cubic-bezier(.3,1.6,.6,1)}
+.instr{display:flex;gap:10px;justify-content:center;align-items:center;font-size:clamp(1.15rem,4vw,1.4rem);font-weight:600;color:var(--muted);margin:6px 0 4px}
+.falar{width:52px;height:52px;flex:none;border-radius:50%;border:0;background:var(--tc);color:#fff;font-size:1.5rem;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.2)}
+.falar:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.2)}
+.palavra-vis{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;font-size:clamp(2.2rem,10vw,3.6rem);font-weight:700;margin:10px 0 4px}
+.box{min-width:1.15em;padding:0 .18em;border-radius:16px;background:var(--soft);border:4px solid transparent}
+.box.vazio{border:4px dashed var(--tc);color:var(--tc);background:transparent}
+.box.ok{background:var(--ok);color:#fff;animation:pop .4s}
+.opcoes{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}
+.opcoes.tres{grid-template-columns:1fr}
+.op{
+  min-height:80px;font-size:clamp(1.9rem,7.5vw,2.7rem);font-weight:700;background:var(--card);
+  border:4px solid var(--line);border-radius:22px;box-shadow:0 6px 0 var(--line);cursor:pointer;transition:transform .1s
+}
+.op:hover{border-color:var(--tc)}
+.op:active{transform:translateY(4px);box-shadow:0 2px 0 var(--line)}
+.op.certo{background:var(--ok);border-color:var(--ok);color:#fff;box-shadow:0 6px 0 #178a50}
+.op.errado{background:var(--bad);border-color:var(--bad);color:#fff;opacity:.5;cursor:default}
+.slots{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.slot{
+  width:clamp(42px,11vw,62px);height:clamp(52px,13vw,72px);border-radius:16px;border:4px dashed var(--line);
+  display:grid;place-items:center;font-size:clamp(1.6rem,6.5vw,2.5rem);font-weight:700
+}
+.slot.prox{border-color:var(--tc)}
+.slot.cheio{border:4px solid var(--ok);background:var(--ok);color:#fff;animation:pop .3s}
+.pecas{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:22px}
+.peca{width:clamp(58px,15vw,74px);height:clamp(58px,15vw,74px);min-height:0;padding:0}
+.peca:nth-child(5n+1){border-color:var(--red)}
+.peca:nth-child(5n+2){border-color:var(--yellow)}
+.peca:nth-child(5n+3){border-color:var(--green)}
+.peca:nth-child(5n+4){border-color:var(--blue)}
+.peca:nth-child(5n+5){border-color:var(--grape)}
+.peca.usada{visibility:hidden}
+.treme{animation:shake .4s}
+
+/* resultado */
+.resultado h2{font-size:clamp(1.6rem,5vw,2.2rem);margin:6px 0}
+.resultado p{font-size:1.2rem;color:var(--muted)}
+.estrelas{font-size:clamp(3.2rem,13vw,4.6rem);display:flex;justify-content:center;gap:8px}
+.estrelas span{animation:pop .5s cubic-bezier(.3,1.6,.6,1) both}
+.estrelas span:nth-child(2){animation-delay:.25s}
+.estrelas span:nth-child(3){animation-delay:.5s}
+.acoes{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:18px}
+.btn-g{
+  font-size:1.2rem;font-weight:700;padding:14px 22px;border-radius:20px;border:0;background:var(--tc);color:#fff;
+  box-shadow:0 6px 0 rgba(0,0,0,.2);cursor:pointer
+}
+.btn-g.sec{background:var(--card);color:var(--ink);border:3px solid var(--line);box-shadow:var(--lift)}
+.btn-g:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.2)}
+
+/* aviso e confete */
+.toast{
+  position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 18%);transform:translate(-50%,0) scale(0);
+  background:var(--ok);color:#fff;font-size:clamp(1.6rem,6vw,2.2rem);font-weight:700;padding:12px 28px;border-radius:999px;
+  box-shadow:0 8px 0 #178a50;transition:transform .3s cubic-bezier(.3,1.6,.6,1);z-index:50;pointer-events:none;white-space:nowrap
+}
+.toast.show{transform:translate(-50%,0) scale(1)}
+.confete{position:fixed;top:-50px;font-size:2rem;pointer-events:none;z-index:60;animation:fall linear forwards}
+
+.minus .txt{text-transform:lowercase}
+
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-8px) rotate(3deg)}}
+@keyframes pop{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-9px)}40%,80%{transform:translateX(9px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes fall{to{transform:translateY(115vh) rotate(540deg)}}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important}
+  .confete{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <button class="brand" id="home" aria-label="Início">
+      <span class="bloco">A</span><span class="bloco">B</span><span class="bloco">C</span>
+      <span class="nome">Letrinhas Mágicas</span>
+    </button>
+    <div class="ctrl">
+      <span class="pill" title="Seus pontos">⭐ <b id="pts">0</b></span>
+      <button class="pill btn" id="btnAbc" title="Trocar entre letras maiúsculas e minúsculas">ABC</button>
+      <button class="pill btn" id="btnSom" title="Ligar ou desligar o som">🔊</button>
+    </div>
+  </header>
+  <main id="app"></main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const TEMAS = {
+  animais:{nome:'Animais',icon:'🐶',cor:'#ff7a45',lista:'GATO 🐱 GA-TO|PATO 🦆 PA-TO|VACA 🐄 VA-CA|SAPO 🐸 SA-PO|RATO 🐭 RA-TO|URSO 🐻 UR-SO|LEÃO 🦁 LE-ÃO|MACACO 🐒 MA-CA-CO|CAVALO 🐴 CA-VA-LO|COELHO 🐰 CO-E-LHO|ABELHA 🐝 A-BE-LHA|GALINHA 🐔 GA-LI-NHA|COBRA 🐍 CO-BRA|OVELHA 🐑 O-VE-LHA'},
+  dinos:{nome:'Dinossauros',icon:'🦖',cor:'#2fae62',lista:'DINO 🦕 DI-NO|REX 🦖 REX|OVO 🥚 O-VO|OSSO 🦴 OS-SO|DENTE 🦷 DEN-TE|PEDRA 🪨 PE-DRA|FOLHA 🍃 FO-LHA|FOGO 🔥 FO-GO|SELVA 🌴 SEL-VA|VULCÃO 🌋 VUL-CÃO|PEGADA 👣 PE-GA-DA|DRAGÃO 🐉 DRA-GÃO|LAGARTO 🦎 LA-GAR-TO'},
+  espaco:{nome:'Espaço e Viagens',icon:'🚀',cor:'#6d5df5',lista:'SOL ☀️ SOL|LUA 🌙 LU-A|NAVE 🛸 NA-VE|MOTO 🏍️ MO-TO|TREM 🚂 TREM|CARRO 🚗 CAR-RO|BARCO ⛵ BAR-CO|TERRA 🌍 TER-RA|AVIÃO ✈️ A-VI-ÃO|COMETA ☄️ CO-ME-TA|FOGUETE 🚀 FO-GUE-TE|ESTRELA ⭐ ES-TRE-LA|PLANETA 🪐 PLA-NE-TA'},
+  mar:{nome:'Fundo do Mar',icon:'🐠',cor:'#1f8fe0',lista:'SIRI 🦀 SI-RI|LULA 🦑 LU-LA|FOCA 🦭 FO-CA|ONDA 🌊 ON-DA|BOIA 🛟 BOI-A|PEIXE 🐟 PEI-XE|POLVO 🐙 POL-VO|AREIA 🏖️ A-REI-A|BALEIA 🐳 BA-LEI-A|CONCHA 🐚 CON-CHA|TUBARÃO 🦈 TU-BA-RÃO|GOLFINHO 🐬 GOL-FI-NHO|TARTARUGA 🐢 TAR-TA-RU-GA'},
+  comidas:{nome:'Gostosuras',icon:'🍎',cor:'#e9475e',lista:'UVA 🍇 U-VA|BOLO 🎂 BO-LO|PERA 🍐 PE-RA|SUCO 🧃 SU-CO|PÃO 🍞 PÃO|MAÇÃ 🍎 MA-ÇÃ|CAFÉ ☕ CA-FÉ|MILHO 🌽 MI-LHO|LIMÃO 🍋 LI-MÃO|QUEIJO 🧀 QUEI-JO|TOMATE 🍅 TO-MA-TE|BANANA 🍌 BA-NA-NA|PIPOCA 🍿 PI-PO-CA|CENOURA 🥕 CE-NOU-RA'},
+  brinquedos:{nome:'Brincadeiras',icon:'🎈',cor:'#f2a20c',lista:'BOLA ⚽ BO-LA|PIPA 🪁 PI-PA|DADO 🎲 DA-DO|ROBÔ 🤖 RO-BÔ|LIVRO 📚 LI-VRO|BALÃO 🎈 BA-LÃO|COROA 👑 CO-RO-A|TAMBOR 🥁 TAM-BOR|VIOLÃO 🎸 VI-O-LÃO|PATINS 🛼 PA-TINS|CASTELO 🏰 CAS-TE-LO|PINTURA 🎨 PIN-TU-RA|PRESENTE 🎁 PRE-SEN-TE'}
+};
+for (const k in TEMAS) {
+  TEMAS[k].palavras = TEMAS[k].lista.split('|').map(s => {
+    const p = s.trim().split(/\s+/);
+    return { w: p[0], e: p[1], s: p[2].split('-') };
+  });
+}
+const TODAS_SILABAS = [...new Set(Object.values(TEMAS).flatMap(t => t.palavras.flatMap(p => p.s)))];
+const LETRAS = 'ABCDEFGHIJLMNOPQRSTUVXZ'.split('');
+const FASES = [
+  { tipo:'letra',   nome:'Primeira letrinha', icon:'🔤', n:6 },
+  { tipo:'palavra', nome:'Qual é o nome?',    icon:'👀', n:6 },
+  { tipo:'silaba',  nome:'Sílaba que falta',  icon:'🧩', n:6 },
+  { tipo:'montar',  nome:'Monte a palavra',   icon:'🏗️', n:5 },
+  { tipo:'desafio', nome:'Grande desafio',    icon:'🏆', n:8 }
+];
+const INSTR = {
+  letra:'Com qual letra começa?',
+  palavra:'Qual é o nome desta figura?',
+  silaba:'Qual sílaba está faltando?',
+  montar:'Toque nas letras na ordem certa!'
+};
+const ELOGIOS = ['Muito bem!','Isso aí!','Arrasou!','Que demais!','Parabéns!','Você é fera!','Incrível!'];
+const DICAS = ['Quase! Tente de novo.','Ops! Tenta outra vez.','Não é essa. Você consegue!'];
+const MAX_ESTRELAS = FASES.length * 3;
+
+/* progresso salvo neste navegador */
+const KEY = 'letrinhas-magicas-v1';
+let P = { pontos:0, temas:{}, minus:false, som:true };
+try { const r = localStorage.getItem(KEY); if (r) P = Object.assign(P, JSON.parse(r)); } catch (e) {}
+function salvar(){ try { localStorage.setItem(KEY, JSON.stringify(P)); } catch (e) {} }
+
+const $app = document.getElementById('app');
+const rnd = a => a[Math.floor(Math.random() * a.length)];
+const emb = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+let S = null;
+
+const estrelasFase = (t, f) => (P.temas[t] || {})[f] || 0;
+const estrelasTema = t => FASES.reduce((a, _, i) => a + estrelasFase(t, i), 0);
+const liberada = (t, f) => f === 0 || estrelasFase(t, f - 1) > 0;
+const estrelasStr = e => [0,1,2].map(i => `<span class="${i < e ? '' : 'off'}">⭐</span>`).join('');
+
+/* voz e sons */
+let voz = null;
+function carregarVoz(){
+  try {
+    const vs = speechSynthesis.getVoices();
+    voz = vs.find(v => v.lang === 'pt-BR') || vs.find(v => v.lang && v.lang.startsWith('pt')) || null;
+  } catch (e) {}
+}
+try { carregarVoz(); speechSynthesis.onvoiceschanged = carregarVoz; } catch (e) {}
+function falar(t){
+  if (!P.som) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(t.toLowerCase());
+    u.lang = 'pt-BR'; u.rate = 0.85; u.pitch = 1.15;
+    if (voz) u.voice = voz;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+let ac = null;
+function bip(tipo){
+  if (!P.som) return;
+  try {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    const notas = { ok:[523,659,784], fim:[523,659,784,1047], erro:[260,200], pop:[880], clique:[660] }[tipo] || [600];
+    notas.forEach((f, i) => {
+      const t = ac.currentTime + i * 0.11;
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = tipo === 'erro' ? 'square' : 'triangle';
+      o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(tipo === 'erro' ? 0.06 : 0.2, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
+      o.connect(g).connect(ac.destination);
+      o.start(t); o.stop(t + 0.3);
+    });
+  } catch (e) {}
+}
+function festa(n){
+  const itens = ['⭐','🎉','✨','🌟','🎈'];
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('span');
+    s.className = 'confete';
+    s.textContent = rnd(itens);
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.animationDuration = (1.2 + Math.random() * 1.2) + 's';
+    s.style.animationDelay = (Math.random() * 0.3) + 's';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 2900);
+  }
+}
+let toastTimer;
+function toast(txt){
+  const el = document.getElementById('toast');
+  el.textContent = txt; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 1300);
+}
+
+function atualizarTopo(){
+  document.getElementById('pts').textContent = P.pontos;
+  document.body.classList.toggle('minus', P.minus);
+  document.getElementById('btnAbc').textContent = P.minus ? 'abc' : 'ABC';
+  document.getElementById('btnSom').textContent = P.som ? '🔊' : '🔇';
+}
+document.getElementById('home').onclick = () => { bip('clique'); telaInicio(); };
+document.getElementById('btnAbc').onclick = () => { P.minus = !P.minus; salvar(); atualizarTopo(); bip('clique'); };
+document.getElementById('btnSom').onclick = () => { P.som = !P.som; salvar(); atualizarTopo(); if (!P.som) try { speechSynthesis.cancel(); } catch (e) {} bip('clique'); };
+
+/* tela inicial */
+function telaInicio(){
+  S = null;
+  const total = Object.keys(TEMAS).reduce((a, k) => a + estrelasTema(k), 0);
+  $app.innerHTML = `
+    <section class="hero">
+      <button class="mascote" id="lili" aria-label="Ouvir a Lili">🦉</button>
+      <div>
+        <h1>Oi! Eu sou a Lili!</h1>
+        <p>Vamos aprender a ler brincando? Escolha um mundo e comece a aventura.</p>
+      </div>
+    </section>
+    <h2 class="sub"><span>Escolha seu mundo</span><span class="pill">⭐ ${total} de ${MAX_ESTRELAS * Object.keys(TEMAS).length}</span></h2>
+    <div class="temas">
+      ${Object.entries(TEMAS).map(([k, t]) => `
+        <button class="tema" style="--tc:${t.cor}" data-tema="${k}">
+          <span class="ic">${t.icon}</span>
+          <span class="nm">${t.nome}</span>
+          <span class="st">⭐ ${estrelasTema(k)}/${MAX_ESTRELAS}</span>
+        </button>`).join('')}
+    </div>
+    <details class="adultos">
+      <summary>👩‍🏫 Para pais e professores</summary>
+      <p>Cada mundo tem 5 fases que seguem a ordem da alfabetização: reconhecer a primeira letra, ler a palavra inteira, completar sílabas e montar palavras letra por letra. A última fase mistura tudo.</p>
+      <p>O botão 🔊 lê a palavra em voz alta para trabalhar a consciência fonológica. O botão ABC troca entre letra de forma maiúscula (bastão) e minúscula. O progresso fica salvo neste aparelho.</p>
+      <button class="zerar" id="zerar">Apagar progresso</button>
+    </details>`;
+  $app.querySelectorAll('[data-tema]').forEach(b => b.onclick = () => { bip('clique'); telaMapa(b.dataset.tema); });
+  document.getElementById('lili').onclick = () => falar('Oi! Eu sou a Lili! Vamos aprender a ler brincando? Escolha um mundo!');
+  document.getElementById('zerar').onclick = () => {
+    if (confirm('Apagar todos os pontos e estrelas?')) { P.pontos = 0; P.temas = {}; salvar(); atualizarTopo(); telaInicio(); }
+  };
+  window.scrollTo(0, 0);
+}
+
+/* mapa de fases */
+function telaMapa(t){
+  const T = TEMAS[t];
+  const offs = ['2%','30%','52%','26%','6%'];
+  const atual = FASES.findIndex((_, i) => liberada(t, i) && estrelasFase(t, i) === 0);
+  $app.innerHTML = `
+    <div class="mapa" style="--tc:${T.cor}">
+      <div class="mapa-top">
+        <button class="voltar" id="volta" aria-label="Voltar aos mundos">←</button>
+        <span class="ic">${T.icon}</span>
+        <div><h2>${T.nome}</h2><p>⭐ ${estrelasTema(t)} de ${MAX_ESTRELAS} estrelas</p></div>
+      </div>
+      <div class="trilha">
+        ${FASES.map((f, i) => {
+          const lib = liberada(t, i);
+          return `<div class="no ${lib ? '' : 'locked'} ${i === atual ? 'atual' : ''}" style="--off:${offs[i]}">
+            <button class="circ" data-f="${i}" ${lib ? '' : 'disabled'} aria-label="Fase ${i + 1}: ${f.nome}">${lib ? f.icon : '🔒'}</button>
+            <div class="info"><small>Fase ${i + 1}</small><b>${f.nome}</b><span class="mini">${estrelasStr(estrelasFase(t, i))}</span></div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  document.getElementById('volta').onclick = () => { bip('clique'); telaInicio(); };
+  $app.querySelectorAll('.circ:not([disabled])').forEach(b => b.onclick = () => { bip('clique'); iniciarFase(t, +b.dataset.f); });
+  window.scrollTo(0, 0);
+}
+
+/* montar perguntas */
+function criar(tipo, p, T){
+  const q = { tipo, p };
+  if (tipo === 'letra') {
+    q.certo = p.w[0];
+    q.ops = emb([q.certo, ...emb(LETRAS.filter(l => l !== q.certo)).slice(0, 3)]);
+  } else if (tipo === 'palavra') {
+    q.certo = p.w;
+    q.ops = emb([p.w, ...emb(T.palavras.filter(x => x.w !== p.w)).slice(0, 2).map(x => x.w)]);
+  } else if (tipo === 'silaba') {
+    q.idx = Math.floor(Math.random() * p.s.length);
+    q.certo = p.s[q.idx];
+    const parecida = emb(TODAS_SILABAS.filter(s => s !== q.certo && s[0] === q.certo[0] && !p.s.includes(s))).slice(0, 1);
+    const outras = emb(TODAS_SILABAS.filter(s => s !== q.certo && !parecida.includes(s) && !p.s.includes(s))).slice(0, 3 - parecida.length);
+    q.ops = emb([q.certo, ...parecida, ...outras]);
+  } else if (tipo === 'montar') {
+    q.pos = 0;
+    let pecas;
+    do { pecas = emb([...p.w].map((l, i) => ({ l, id:i }))); } while (p.w.length > 1 && pecas.map(x => x.l).join('') === p.w);
+    q.pecas = pecas;
+  }
+  return q;
+}
+function iniciarFase(t, f){
+  const T = TEMAS[t], F = FASES[f];
+  let tipos = [];
+  for (let i = 0; i < F.n; i++) tipos.push(F.tipo === 'desafio' ? ['letra','palavra','silaba','montar'][i % 4] : F.tipo);
+  if (F.tipo === 'desafio') tipos = emb(tipos);
+  const pool = emb(T.palavras), usadas = new Set();
+  const serve = (tipo, p) => tipo === 'silaba' ? p.s.length > 1 : tipo === 'montar' ? p.w.length <= 7 : true;
+  const qs = tipos.map(tipo => {
+    const p = pool.find(x => !usadas.has(x.w) && serve(tipo, x)) || pool.find(x => serve(tipo, x));
+    usadas.add(p.w);
+    return criar(tipo, p, T);
+  });
+  S = { t, f, qs, i:0, erros:0, pontos:0 };
+  renderPergunta();
+}
+
+/* pergunta */
+function renderPergunta(){
+  const q = S.qs[S.i], T = TEMAS[S.t];
+  S.errosQ = 0; S.trava = false;
+  const podeFalar = q.tipo !== 'palavra';
+  let corpo = '';
+  if (q.tipo === 'letra') {
+    corpo = `<div class="palavra-vis txt"><span class="box vazio">?</span><span class="box">${q.p.w.slice(1)}</span></div>
+      <div class="opcoes">${q.ops.map(o => `<button class="op txt" data-v="${o}">${o}</button>`).join('')}</div>`;
+  } else if (q.tipo === 'palavra') {
+    corpo = `<div class="opcoes tres">${q.ops.map(o => `<button class="op txt" data-v="${o}">${o}</button>`).join('')}</div>`;
+  } else if (q.tipo === 'silaba') {
+    corpo = `<div class="palavra-vis txt">${q.p.s.map((s, i) => i === q.idx ? '<span class="box vazio">?</span>' : `<span class="box">${s}</span>`).join('')}</div>
+      <div class="opcoes">${q.ops.map(o => `<button class="op txt" data-v="${o}">${o}</button>`).join('')}</div>`;
+  } else {
+    corpo = `<div class="slots txt">${[...q.p.w].map((_, i) => `<span class="slot ${i === 0 ? 'prox' : ''}"></span>`).join('')}</div>
+      <div class="pecas">${q.pecas.map(x => `<button class="op peca txt" data-l="${x.l}">${x.l}</button>`).join('')}</div>`;
+  }
+  $app.innerHTML = `
+    <div class="jogo" style="--tc:${T.cor}">
+      <div class="jogo-top">
+        <button class="voltar" id="sair" aria-label="Voltar ao mapa">✕</button>
+        <div class="barra" aria-label="Pergunta ${S.i + 1} de ${S.qs.length}"><i style="width:${S.i / S.qs.length * 100}%"></i></div>
+        <span class="pill" id="ptsFase">⭐ ${S.pontos}</span>
+      </div>
+      <div class="cartao">
+        <div class="figura" aria-hidden="true">${q.p.e}</div>
+        <div class="instr">
+          ${podeFalar ? '<button class="falar" id="falar" aria-label="Ouvir a palavra">🔊</button>' : ''}
+          <span>${INSTR[q.tipo]}</span>
+        </div>
+        ${corpo}
+      </div>
+    </div>`;
+  document.getElementById('sair').onclick = () => { bip('clique'); telaMapa(S.t); };
+  if (podeFalar) {
+    document.getElementById('falar').onclick = () => falar(q.p.w);
+    setTimeout(() => falar(q.p.w), 350);
+  } else {
+    setTimeout(() => falar(INSTR.palavra), 350);
+  }
+
+  if (q.tipo === 'montar') {
+    $app.querySelectorAll('.peca').forEach(b => b.onclick = () => {
+      if (S.trava || b.classList.contains('usada')) return;
+      const alvo = q.p.w[q.pos];
+      if (b.dataset.l === alvo) {
+        b.classList.add('usada');
+        const slots = $app.querySelectorAll('.slot');
+        slots[q.pos].textContent = alvo;
+        slots[q.pos].classList.remove('prox');
+        slots[q.pos].classList.add('cheio');
+        q.pos++;
+        if (slots[q.pos]) slots[q.pos].classList.add('prox');
+        if (q.pos === q.p.w.length) acertou(q); else bip('pop');
+      } else {
+        errou(b, true);
+      }
+    });
+  } else {
+    $app.querySelectorAll('.op').forEach(b => b.onclick = () => {
+      if (S.trava || b.disabled) return;
+      if (b.dataset.v === q.certo) {
+        b.classList.add('certo');
+        const v = $app.querySelector('.box.vazio');
+        if (v) { v.textContent = q.certo; v.classList.remove('vazio'); v.classList.add('ok'); }
+        acertou(q);
+      } else {
+        errou(b, false);
+      }
+    });
+  }
+  window.scrollTo(0, 0);
+}
+
+function acertou(q){
+  S.trava = true;
+  const ganho = S.errosQ === 0 ? 10 : 5;
+  S.pontos += ganho; P.pontos += ganho; salvar(); atualizarTopo();
+  document.getElementById('ptsFase').textContent = '⭐ ' + S.pontos;
+  $app.querySelector('.barra i').style.width = ((S.i + 1) / S.qs.length * 100) + '%';
+  const el = rnd(ELOGIOS);
+  bip('ok'); festa(10); toast(`${el} +${ganho}`);
+  setTimeout(() => falar(`${el} ${q.p.w}`), 250);
+  setTimeout(() => {
+    S.i++;
+    if (S.i < S.qs.length) renderPergunta(); else telaFim();
+  }, 1900);
+}
+function errou(b, montar){
+  S.errosQ++; S.erros++;
+  bip('erro');
+  b.classList.remove('treme'); void b.offsetWidth; b.classList.add('treme');
+  if (!montar) { b.classList.add('errado'); b.disabled = true; }
+  falar(rnd(DICAS));
+}
+
+/* fim da fase */
+function telaFim(){
+  const T = TEMAS[S.t];
+  const e = S.erros <= 1 ? 3 : S.erros <= 3 ? 2 : 1;
+  P.temas[S.t] = P.temas[S.t] || {};
+  if (e > estrelasFase(S.t, S.f)) P.temas[S.t][S.f] = e;
+  const bonus = e * 5;
+  P.pontos += bonus; salvar(); atualizarTopo();
+  const ultima = S.f === FASES.length - 1;
+  const titulo = ultima ? `Você completou o mundo ${T.nome}!`
+    : e === 3 ? 'Perfeito! Você é demais!'
+    : e === 2 ? 'Muito bem! Mandou bem!'
+    : 'Conseguiu! Continue treinando!';
+  $app.innerHTML = `
+    <div class="cartao resultado" style="--tc:${T.cor}">
+      <div class="mascote" aria-hidden="true">${ultima ? '🏆' : '🦉'}</div>
+      <h2>${titulo}</h2>
+      <div class="estrelas">${estrelasStr(e)}</div>
+      <p>Você ganhou <b>${S.pontos + bonus}</b> pontos nesta fase (com ${bonus} de bônus pelas estrelas).</p>
+      <div class="acoes">
+        ${ultima ? '<button class="btn-g" id="mundos">Escolher outro mundo 🌍</button>' : '<button class="btn-g" id="prox">Próxima fase ▶</button>'}
+        <button class="btn-g sec" id="denovo">Jogar de novo 🔁</button>
+        <button class="btn-g sec" id="mapa">Ver o mapa 🗺️</button>
+      </div>
+    </div>`;
+  bip('fim'); festa(ultima ? 45 : 28);
+  setTimeout(() => falar(titulo), 300);
+  const { t, f } = S;
+  const b = id => document.getElementById(id);
+  if (b('prox')) b('prox').onclick = () => { bip('clique'); iniciarFase(t, f + 1); };
+  if (b('mundos')) b('mundos').onclick = () => { bip('clique'); telaInicio(); };
+  b('denovo').onclick = () => { bip('clique'); iniciarFase(t, f); };
+  b('mapa').onclick = () => { bip('clique'); telaMapa(t); };
+  window.scrollTo(0, 0);
+}
+
+atualizarTopo();
+telaInicio();
+</script>
+</body>
+</html>
